@@ -1,55 +1,28 @@
-import { createBrowserRouter } from "react-router-dom";
-import Home from "../pages/Home";
-import ProductDetails from "../pages/ProductDetails";
-import Login from "../layouts/Login";
-import Register from "../layouts/Register";
-import Navbar from "../layouts/Navbar";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from '../pages/Home';
+import Products from '../pages/Products';
+import Cart from '../pages/Cart';
+import Login from '../layouts/Login';
+import Register from '../layouts/Register';
+import About from '../pages/About';
+import Contact from '../pages/Contact';
+import Categories from '../pages/Categories';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <>
-        <Navbar />
-        <div className="pt-16">
-          <Home />
-        </div>
-      </>
-    ),
-  },
-  {
-    path: "/product/:id",
-    element: (
-      <>
-        <Navbar />
-        <div className="pt-16">
-          <ProductDetails />
-        </div>
-      </>
-    ),
-  },
-  {
-    path: "/login",
-    element: (
-      <>
-        <Navbar />
-        <div className="pt-16">
-          <Login />
-        </div>
-      </>
-    ),
-  },
-  {
-    path: "/register",
-    element: (
-      <>
-        <Navbar />
-        <div className="pt-16">
-          <Register />
-        </div>
-      </>
-    ),
-  },
-]);
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/categories" element={<Categories />} />
+      <Route path="/categories/:category" element={<Categories />} />
+    </Routes>
+  );
+};
 
-export default router; 
+export default AppRoutes; 
