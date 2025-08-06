@@ -10,6 +10,7 @@ import {
   XMarkIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { useDarkMode } from "../contexts/DarkModeContext";
 
 const categories = [
   { name: "Electronics", href: "/categories/electronics" },
@@ -20,7 +21,7 @@ const categories = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [dark, setDark] = useState(false);
+  const { dark, toggleDarkMode } = useDarkMode();
   const [cartCount, setCartCount] = useState(3); // Example cart count
   const location = useLocation();
 
@@ -31,14 +32,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Dark mode toggle
-  useEffect(() => {
-    if (dark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [dark]);
+
 
   // Close mobile menu on route change
   useEffect(() => setIsOpen(false), [location]);
@@ -69,7 +63,7 @@ const Navbar = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
             <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-            <NavLink to="/shop" label="Shop" location={location} navLinkClass={navLinkClass} />
+            <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
             {/* Categories Dropdown */}
             <Menu as="div" className="relative">
               <Menu.Button className={navLinkClass(location.pathname.startsWith("/categories")) + " flex items-center"}>
@@ -121,7 +115,7 @@ const Navbar = () => {
 
             {/* Dark Mode Toggle */}
             <button
-              onClick={() => setDark((d) => !d)}
+              onClick={toggleDarkMode}
               className="ml-2 p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
               aria-label="Toggle dark mode"
             >
@@ -155,7 +149,7 @@ const Navbar = () => {
       >
         <div className="px-4 py-6 flex flex-col space-y-3">
           <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-          <NavLink to="/shop" label="Shop" location={location} navLinkClass={navLinkClass} />
+          <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
           {/* Categories Dropdown */}
           <Menu as="div" className="relative">
             <Menu.Button className={navLinkClass(location.pathname.startsWith("/categories")) + " flex items-center"}>
@@ -206,7 +200,7 @@ const Navbar = () => {
 
           {/* Dark Mode Toggle */}
           <button
-            onClick={() => setDark((d) => !d)}
+            onClick={toggleDarkMode}
             className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition self-start"
             aria-label="Toggle dark mode"
           >
