@@ -11,6 +11,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useDarkMode } from "../contexts/DarkModeContext";
+import { useScrollPosition, useDebounce } from "../hooks";
 
 const categories = [
   { name: "Electronics", href: "/categories/electronics" },
@@ -20,17 +21,17 @@ const categories = [
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { dark, toggleDarkMode } = useDarkMode();
   const [cartCount, setCartCount] = useState(3); // Example cart count
   const location = useLocation();
-
-  // Scroll shadow
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  
+  // Optimized scroll handling with custom hook
+  const scrollPosition = useScrollPosition();
+  const scrolled = scrollPosition > 10;
+  
+  // Debounced search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
 
 

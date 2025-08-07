@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShoppingBagIcon,
@@ -12,23 +12,14 @@ import {
   CreditCardIcon,
   ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+import LazyImage from '../components/LazyImage';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    setIsVisible(true);
-    
-    // Auto-slide for hero section
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const heroSlides = [
+  // Memoize data to prevent unnecessary re-renders
+  const heroSlides = useMemo(() => [
     {
       title: "New Collection 2024",
       subtitle: "Discover the latest trends in fashion and technology",
@@ -53,9 +44,9 @@ const Home = () => {
       buttonText: "Shop Home",
       buttonLink: "/categories/home"
     }
-  ];
+  ], []);
 
-  const categories = [
+  const categories = useMemo(() => [
     {
       name: "Electronics",
       image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
@@ -80,7 +71,20 @@ const Home = () => {
       count: "456 Products",
       color: "from-orange-500 to-yellow-500"
     }
-  ];
+  ], []);
+
+  useEffect(() => {
+    setIsVisible(true);
+    
+    // Auto-slide for hero section
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [heroSlides.length]);
+
+
 
   const featuredProducts = [
     {
@@ -185,7 +189,7 @@ const Home = () => {
             }`}
           >
             <div className="absolute inset-0 bg-black/40 z-10"></div>
-            <img
+            <LazyImage
               src={slide.image}
               alt={slide.title}
               className="w-full h-full object-cover"
@@ -281,7 +285,7 @@ const Home = () => {
                 className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
               >
                 <div className="aspect-square relative">
-                  <img
+                  <LazyImage
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -319,7 +323,7 @@ const Home = () => {
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group"
               >
                 <div className="relative overflow-hidden rounded-t-2xl">
-                  <img
+                  <LazyImage
                     src={product.image}
                     alt={product.name}
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"

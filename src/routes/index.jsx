@@ -1,39 +1,47 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from '../pages/Home';
-import Products from '../pages/Products';
-import ProductDetails from '../pages/ProductDetails';
-import Cart from '../pages/Cart';
-import Login from '../layouts/Login';
-import Register from '../layouts/Register';
-import About from '../pages/About';
-import Contact from '../pages/Contact';
-import Categories from '../pages/Categories';
-import Profile from '../pages/Profile';
-import AdminDashboard from '../admin/AdminDashboard';
-import ManageOrder from '../admin/ManageOrder';
-import ManageProduct from '../admin/ManageProduct';
-import ManageUser from '../admin/ManageUser';
+
+// Lazy load all page components
+const Home = lazy(() => import('../pages/Home'));
+const Products = lazy(() => import('../pages/Products'));
+const ProductDetails = lazy(() => import('../pages/ProductDetails'));
+const Cart = lazy(() => import('../pages/Cart'));
+const Login = lazy(() => import('../layouts/Login'));
+const Register = lazy(() => import('../layouts/Register'));
+const About = lazy(() => import('../pages/About'));
+const Contact = lazy(() => import('../pages/Contact'));
+const Profile = lazy(() => import('../pages/Profile'));
+const AdminDashboard = lazy(() => import('../admin/AdminDashboard'));
+const ManageOrder = lazy(() => import('../admin/ManageOrder'));
+const ManageProduct = lazy(() => import('../admin/ManageProduct'));
+const ManageUser = lazy(() => import('../admin/ManageUser'));
+
+// Simple loading component for route transitions
+const RouteLoading = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+  </div>
+);
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/product/:id" element={<ProductDetails />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/categories" element={<Categories />} />
-      <Route path="/categories/:category" element={<Categories />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/manage-orders" element={<ManageOrder />} />
-      <Route path="/manage-products" element={<ManageProduct />} />
-      <Route path="/manage-users" element={<ManageUser />} />
-    </Routes>
+    <Suspense fallback={<RouteLoading />}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/manage-orders" element={<ManageOrder />} />
+        <Route path="/manage-products" element={<ManageProduct />} />
+        <Route path="/manage-users" element={<ManageUser />} />
+      </Routes>
+    </Suspense>
   );
 };
 

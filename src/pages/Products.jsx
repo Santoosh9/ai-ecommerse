@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   MagnifyingGlassIcon,
@@ -14,6 +14,8 @@ import {
   FireIcon,
   TagIcon
 } from '@heroicons/react/24/outline';
+import { useDebounce } from '../hooks';
+import LazyImage from '../components/LazyImage';
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +24,9 @@ const Products = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  
+  // Debounced search for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const categories = [
     'All', 'Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Beauty', 'Toys'
@@ -159,43 +164,49 @@ const Products = () => {
     }
   ];
 
-  const toggleWishlist = (productId) => {
+  // Memoized callback functions for better performance
+  const toggleWishlist = useCallback((productId) => {
     setWishlist(prev => 
       prev.includes(productId) 
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSearchTerm('');
     setSelectedCategory('All');
     setPriceRange([0, 1000]);
     setSortBy('featured');
-  };
+  }, []);
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    
-    return matchesSearch && matchesCategory && matchesPrice;
-  });
+  // Memoized filtered and sorted products
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+      
+      return matchesSearch && matchesCategory && matchesPrice;
+    });
+  }, [products, debouncedSearchTerm, selectedCategory, priceRange]);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low':
-        return a.price - b.price;
-      case 'price-high':
-        return b.price - a.price;
-      case 'rating':
-        return b.rating - a.rating;
-      case 'newest':
-        return b.isNew - a.isNew;
-      default:
-        return 0;
-    }
-  });
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'rating':
+          return b.rating - a.rating;
+        case 'newest':
+          return b.isNew - a.isNew;
+        default:
+          return 0;
+      }
+    });
+  }, [filteredProducts, sortBy]);
 
   const getBadgeColor = (badge) => {
     switch (badge) {
@@ -339,7 +350,7 @@ const Products = () => {
             >
               {/* Product Image */}
               <div className="relative overflow-hidden">
-                <img
+                <LazyImage
                   src={product.image}
                   alt={product.name}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
