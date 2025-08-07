@@ -122,8 +122,8 @@ const Navbar = () => {
               {dark ? <SunIcon className="w-5 h-5 text-yellow-400" /> : <MoonIcon className="w-5 h-5 text-gray-600" />}
             </button>
 
-            {/* Login Icon */}
-            <Link to="/login" className="ml-2 group">
+            {/* Profile Icon */}
+            <Link to="/profile" className="ml-2 group">
               <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
             </Link>
           </div>
