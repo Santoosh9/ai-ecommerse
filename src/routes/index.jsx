@@ -6,11 +6,12 @@ const Home = lazy(() => import('../pages/Home'));
 const Products = lazy(() => import('../pages/Products'));
 const ProductDetails = lazy(() => import('../pages/ProductDetails'));
 const Cart = lazy(() => import('../pages/Cart'));
-const Login = lazy(() => import('../layouts/Login'));
-const Register = lazy(() => import('../layouts/Register'));
+
 const About = lazy(() => import('../pages/About'));
 const Contact = lazy(() => import('../pages/Contact'));
 const Profile = lazy(() => import('../pages/Profile'));
+const Categories = lazy(() => import('../pages/Categories'));
+const LocalProducts = lazy(() => import('../pages/LocalProducts'));
 const AdminDashboard = lazy(() => import('../admin/AdminDashboard'));
 const ManageOrder = lazy(() => import('../admin/ManageOrder'));
 const ManageProduct = lazy(() => import('../admin/ManageProduct'));
@@ -31,11 +32,12 @@ const AppRoutes = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/categories/:category" element={<Categories />} />
+        <Route path="/categories/local-products" element={<LocalProducts />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/manage-orders" element={<ManageOrder />} />
         <Route path="/manage-products" element={<ManageProduct />} />

@@ -11,18 +11,24 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useDarkMode } from "../contexts/DarkModeContext";
+import { useAuth } from "../contexts/AuthContext";
 import { useScrollPosition, useDebounce } from "../hooks";
+import AuthModal from "../components/AuthModal";
 
 const categories = [
   { name: "Electronics", href: "/categories/electronics" },
   { name: "Fashion", href: "/categories/fashion" },
   { name: "Grocery", href: "/categories/grocery" },
+  { name: "Local Products", href: "/categories/local-products" },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
   const { dark, toggleDarkMode } = useDarkMode();
+  const { user, isAuthenticated, logout } = useAuth();
   const [cartCount, setCartCount] = useState(3); // Example cart count
   const location = useLocation();
   
@@ -56,9 +62,13 @@ const Navbar = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent select-none tracking-tight hover:scale-110 transition-transform duration-300"
+            className="flex items-center hover:scale-110 transition-transform duration-300"
           >
-            E-Shop
+            <img
+              src="/images/Logo.jpg"
+              alt="E-Shop Logo"
+              className="h-14 w-auto object-contain rounded-xl shadow-lg border-2 border-gray-200 dark:border-gray-700"
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -123,10 +133,62 @@ const Navbar = () => {
               {dark ? <SunIcon className="w-5 h-5 text-yellow-400" /> : <MoonIcon className="w-5 h-5 text-gray-600" />}
             </button>
 
-            {/* Profile Icon */}
-            <Link to="/profile" className="ml-2 group">
-              <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
-            </Link>
+            {/* User Profile/Auth */}
+            {isAuthenticated ? (
+              <div className="ml-2 relative group">
+                <button className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300">
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                  />
+                  <span className="hidden lg:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {user.name}
+                  </span>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <div className="py-2">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      My Profile
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      My Orders
+                    </Link>
+                    <Link
+                      to="/wishlist"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Wishlist
+                    </Link>
+                    <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setAuthMode('login');
+                  setShowAuthModal(true);
+                }}
+                className="ml-2 p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 group"
+              >
+                <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
+              </button>
+            )}
           </div>
 
           {/* Mobile Hamburger */}
@@ -208,12 +270,47 @@ const Navbar = () => {
             {dark ? <SunIcon className="w-5 h-5 text-yellow-400" /> : <MoonIcon className="w-5 h-5 text-gray-600" />}
           </button>
 
-          {/* Login Icon */}
-          <Link to="/login" className="group">
-            <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
-          </Link>
+          {/* User Profile/Auth Mobile */}
+          {isAuthenticated ? (
+            <div className="flex items-center space-x-3">
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+              </div>
+              <button
+                onClick={logout}
+                className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setAuthMode('login');
+                setShowAuthModal(true);
+                setIsOpen(false);
+              }}
+              className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+            >
+              <UserCircleIcon className="w-6 h-6 text-gray-500 dark:text-gray-300" />
+              <span className="text-gray-700 dark:text-gray-300">Sign In</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authMode}
+      />
     </nav>
   );
 };

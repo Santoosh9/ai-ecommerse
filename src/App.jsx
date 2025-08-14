@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { DarkModeProvider } from './contexts/DarkModeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './layouts/Navbar';
 import Footer from './layouts/Footer';
 import AppRoutes from './routes';
@@ -17,15 +18,17 @@ const LoadingSpinner = () => (
 function App() {
   return (
     <DarkModeProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <Navbar />
-        <main className="flex-1">
-          <Suspense fallback={<LoadingSpinner />}>
-            <AppRoutes />
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+          <Navbar />
+          <main className="flex-1">
+            <Suspense fallback={<LoadingSpinner />}>
+              <AppRoutes />
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
     </DarkModeProvider>
   );
 }
