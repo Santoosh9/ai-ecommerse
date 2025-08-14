@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
 import AuthModal from '../components/AuthModal';
+import { authService } from '../services';
 
 const AuthContext = createContext();
 
@@ -14,22 +15,88 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage('user', null);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!user);
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setIsAuthenticated(!!user);
+    // Check if user is authenticated on mount
+    const checkAuth = () => {
+      const isAuth = authService.isAuthenticated();
+      setIsAuthenticated(isAuth);
+      
+      if (isAuth && !user) {
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+      }
+    };
+    
+    checkAuth();
   }, [user]);
 
-  const login = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
+  const login = async (credentials) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await authService.login(credentials);
+      setUser(response.user);
+      setIsAuthenticated(true);
+      return response;
+    } catch (error) {
+      const errorMessages = authService.formatError(error);
+      setError(errorMessages);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+  const register = async (userData) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Transform the form data to match API expectations
+      const registrationData = {
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        address: userData.address
+      };
+      
+      const response = await authService.register(registrationData);
+      
+      // If registration includes auto-login
+      if (response.user) {
+        setUser(response.user);
+        setIsAuthenticated(true);
+      }
+      
+      return response;
+    } catch (error) {
+      const errorMessages = authService.formatError(error);
+      setError(errorMessages);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setLoading(true);
+    
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+    }
   };
 
   const openAuthModal = (mode = 'login') => {
@@ -45,11 +112,15 @@ export const AuthProvider = ({ children }) => {
     user,
     isAuthenticated,
     login,
+    register,
     logout,
+    loading,
+    error,
     showAuthModal,
     authMode,
     openAuthModal,
-    closeAuthModal
+    closeAuthModal,
+    clearError: () => setError(null)
   };
 
   return (

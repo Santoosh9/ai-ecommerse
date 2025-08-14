@@ -321,7 +321,7 @@ const ProductDetails = () => {
                 <span>
                   {product.inStock ? `Add to Cart - $${(product.price * quantity).toFixed(2)}` : 'Out of Stock'}
                 </span>
-              </button>
+      </button>
 
               {/* Added to Cart Notification */}
               {showAddedToCart && (

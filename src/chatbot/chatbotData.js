@@ -133,11 +133,11 @@ export const chatbotResponses = {
 
   // Contact
   "contact": [
-    "You can contact us:\n• Email: support@eshop.com\n• Phone: +1 (555) 123-4567\n• Live chat: Available 24/7\n• Social media: @eshop_official\n\nWe typically respond within 2 hours!",
-    "Contact information:\n• Email: support@eshop.com\n• Phone: +1 (555) 123-4567\n• Live chat: 24/7\n• Social: @eshop_official\n\nWe respond within 2 hours!"
+    "You can contact us:\n• Email: hello@smartlocal.com\n• Phone: +44 (0) 20 7946 0958\n• Live chat: Available 24/7\n• Social media: @smartlocal_uk\n\nWe typically respond within 2 hours!",
+    "Contact information:\n• Email: hello@smartlocal.com\n• Phone: +44 (0) 20 7946 0958\n• Live chat: 24/7\n• Social: @smartlocal_uk\n\nWe respond within 2 hours!"
   ],
   "support": [
-    "You can contact us:\n• Email: support@eshop.com\n• Phone: +1 (555) 123-4567\n• Live chat: Available 24/7\n• Social media: @eshop_official\n\nWe typically respond within 2 hours!"
+    "You can contact us:\n• Email: hello@smartlocal.com\n• Phone: +44 (0) 20 7946 0958\n• Live chat: Available 24/7\n• Social media: @smartlocal_uk\n\nWe typically respond within 2 hours!"
   ],
 
   // Products

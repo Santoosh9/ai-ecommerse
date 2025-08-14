@@ -117,8 +117,6 @@ const Navbar = () => {
                 ))}
               </Menu.Items>
             </Menu>
-            <NavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
-            <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
 
             {/* Search */}
             <div className="relative group">
@@ -193,7 +191,7 @@ const Navbar = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+          </div>
             ) : (
               <button
                 onClick={() => openAuthModal('login')}
@@ -253,9 +251,6 @@ const Navbar = () => {
               ))}
             </Menu.Items>
           </Menu>
-          <NavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
-          <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
-
           {/* Search */}
           <div className="relative group">
             <input

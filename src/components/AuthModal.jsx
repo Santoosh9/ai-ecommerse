@@ -5,17 +5,16 @@ import { useAuth } from '../contexts/AuthContext';
 const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    fullName: ''
+    address: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, register, loading, error: authError, clearError } = useAuth();
 
   const handleInputChange = (e) => {
     setFormData({
@@ -29,40 +28,26 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    clearError();
 
     try {
       if (mode === 'register') {
-        if (formData.password !== formData.confirmPassword) {
-          throw new Error('Passwords do not match');
-        }
         if (formData.password.length < 6) {
           throw new Error('Password must be at least 6 characters');
         }
-      }
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      if (mode === 'login') {
-        // Simulate login
-        login({
-          id: 1,
-          email: formData.email,
-          name: formData.email.split('@')[0], // Use email prefix as name
-          avatar: `https://ui-avatars.com/api/?name=${formData.email.split('@')[0]}&background=6366f1&color=fff`
-        });
+        
+        // Call register API
+        await register(formData);
       } else {
-        // Simulate register
-        login({
-          id: 1,
+        // Call login API
+        await login({
           email: formData.email,
-          name: formData.fullName,
-          avatar: `https://ui-avatars.com/api/?name=${formData.fullName}&background=6366f1&color=fff`
+          password: formData.password
         });
       }
 
       onClose();
-      setFormData({ email: '', password: '', confirmPassword: '', fullName: '' });
+      setFormData({ username: '', email: '', password: '', address: '' });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -73,7 +58,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const switchMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
-    setFormData({ email: '', password: '', confirmPassword: '', fullName: '' });
+    setFormData({ username: '', email: '', password: '', address: '' });
   };
 
   if (!isOpen) return null;
@@ -107,25 +92,27 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {error && (
+            {(error || authError) && (
               <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                <p className="text-red-600 dark:text-red-400 text-sm">
+                  {error || (Array.isArray(authError) ? authError.join(', ') : authError)}
+                </p>
               </div>
             )}
 
             {mode === 'register' && (
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
+                  Username
                 </label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Enter your full name"
+                  placeholder="Enter your username"
                 />
               </div>
             )}
@@ -176,30 +163,17 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
             {mode === 'register' && (
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Confirm Password
+                  Address
                 </label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Confirm your password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeSlashIcon className="w-5 h-5" />
-                    ) : (
-                      <EyeIcon className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                  rows="3"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 resize-none"
+                  placeholder="Enter your address"
+                />
               </div>
             )}
 
@@ -225,10 +199,10 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || loading}
               className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {isLoading ? (
+              {(isLoading || loading) ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   {mode === 'login' ? 'Signing in...' : 'Creating account...'}

@@ -153,15 +153,15 @@ const Footer = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center space-x-3 group">
                     <EnvelopeIcon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                    <span className="text-gray-300 group-hover:text-white transition-colors">contact@eshop.com</span>
+                    <span className="text-gray-300 group-hover:text-white transition-colors">hello@smartlocal.com</span>
                   </div>
                   <div className="flex items-center space-x-3 group">
                     <PhoneIcon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                    <span className="text-gray-300 group-hover:text-white transition-colors">+1 (555) 123-4567</span>
+                    <span className="text-gray-300 group-hover:text-white transition-colors">+44 (0) 20 7946 0958</span>
                   </div>
                   <div className="flex items-center space-x-3 group">
                     <MapPinIcon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                    <span className="text-gray-300 group-hover:text-white transition-colors">123 E-Shop Street, Digital City</span>
+                    <span className="text-gray-300 group-hover:text-white transition-colors">25 Old Street, London, EC1V 9DD, UK</span>
                   </div>
                 </div>
 

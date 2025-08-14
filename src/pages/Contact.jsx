@@ -26,25 +26,25 @@ const Contact = () => {
     {
       icon: EnvelopeIcon,
       title: 'Email Us',
-      details: ['hello@eshop.com', 'support@eshop.com'],
+      details: ['hello@smartlocal.com', 'support@smartlocal.com'],
       color: 'from-blue-500 to-indigo-500'
     },
     {
       icon: PhoneIcon,
       title: 'Call Us',
-      details: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
+      details: ['+44 (0) 20 7946 0958', '+44 (0) 20 7946 0959'],
       color: 'from-green-500 to-emerald-500'
     },
     {
       icon: MapPinIcon,
       title: 'Visit Us',
-      details: ['123 Commerce St', 'New York, NY 10001'],
+      details: ['25 Old Street', 'London, EC1V 9DD, UK'],
       color: 'from-purple-500 to-pink-500'
     },
     {
       icon: ClockIcon,
       title: 'Business Hours',
-      details: ['Mon-Fri: 9AM-6PM', 'Sat-Sun: 10AM-4PM'],
+      details: ['Mon-Fri: 9AM-6PM GMT', 'Sat: 10AM-4PM GMT'],
       color: 'from-orange-500 to-red-500'
     }
   ];

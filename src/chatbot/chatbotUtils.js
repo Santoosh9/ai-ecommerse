@@ -215,7 +215,7 @@ export const isUrgent = (message) => {
  */
 export const addUrgencyIndicator = (response, isUrgent) => {
   if (isUrgent) {
-    return "🚨 " + response + "\n\nFor urgent matters, you can also call us at +1 (555) 123-4567 for immediate assistance.";
+    return "🚨 " + response + "\n\nFor urgent matters, you can also call us at +44 (0) 20 7946 0958 for immediate assistance.";
   }
   return response;
 };
