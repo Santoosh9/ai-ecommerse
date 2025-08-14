@@ -9,26 +9,24 @@ import {
   Bars3Icon,
   XMarkIcon,
   MagnifyingGlassIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useScrollPosition, useDebounce } from "../hooks";
-import AuthModal from "../components/AuthModal";
 
 const categories = [
   { name: "Electronics", href: "/categories/electronics" },
-  { name: "Fashion", href: "/categories/fashion" },
-  { name: "Grocery", href: "/categories/grocery" },
+  { name: "Fashion & Apparel", href: "/categories/fashion" },
+  { name: "Home & Living", href: "/categories/home" },
   { name: "Local Products", href: "/categories/local-products" },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
   const { dark, toggleDarkMode } = useDarkMode();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const [cartCount, setCartCount] = useState(3); // Example cart count
   const location = useLocation();
   
@@ -50,6 +48,22 @@ const Navbar = () => {
     ${active ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-200"}
     group
     `;
+
+  // Protected NavLink component with lock icon
+  const ProtectedNavLink = ({ to, label, location, navLinkClass, isProtected = true }) => {
+    const isActive = location.pathname === to;
+    return (
+      <Link to={to} className={navLinkClass(isActive)}>
+        <div className="flex items-center space-x-1">
+          <span>{label}</span>
+          {isProtected && !isAuthenticated && (
+            <LockClosedIcon className="w-3 h-3 text-gray-400" />
+          )}
+        </div>
+        <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
+      </Link>
+    );
+  };
 
   return (
     <nav
@@ -74,7 +88,9 @@ const Navbar = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
             <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-            <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+            <ProtectedNavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+            <ProtectedNavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
+            <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
             {/* Categories Dropdown */}
             <Menu as="div" className="relative">
               <Menu.Button className={navLinkClass(location.pathname.startsWith("/categories")) + " flex items-center"}>
@@ -180,10 +196,7 @@ const Navbar = () => {
               </div>
             ) : (
               <button
-                onClick={() => {
-                  setAuthMode('login');
-                  setShowAuthModal(true);
-                }}
+                onClick={() => openAuthModal('login')}
                 className="ml-2 p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 group"
               >
                 <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
@@ -212,7 +225,9 @@ const Navbar = () => {
       >
         <div className="px-4 py-6 flex flex-col space-y-3">
           <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-          <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+          <ProtectedNavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+          <ProtectedNavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
+          <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
           {/* Categories Dropdown */}
           <Menu as="div" className="relative">
             <Menu.Button className={navLinkClass(location.pathname.startsWith("/categories")) + " flex items-center"}>
@@ -253,7 +268,12 @@ const Navbar = () => {
 
           {/* Cart */}
           <Link to="/cart" className="relative group">
-            <ShoppingCartIcon className="w-7 h-7 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+            <div className="flex items-center space-x-1">
+              <ShoppingCartIcon className="w-7 h-7 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+              {!isAuthenticated && (
+                <LockClosedIcon className="w-3 h-3 text-gray-400" />
+              )}
+            </div>
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-bounce">
                 {cartCount}
@@ -292,8 +312,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => {
-                setAuthMode('login');
-                setShowAuthModal(true);
+                openAuthModal('login');
                 setIsOpen(false);
               }}
               className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
@@ -305,12 +324,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authMode}
-      />
     </nav>
   );
 };

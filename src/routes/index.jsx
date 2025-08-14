@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 // Lazy load all page components
 const Home = lazy(() => import('../pages/Home'));
@@ -28,16 +29,53 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteLoading />}>
       <Routes>
+        {/* Public Routes - No login required */}
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/about" element={<About />} />
+        
+        {/* Protected Routes - Login required */}
+        <Route path="/about" element={
+          <ProtectedRoute>
+            <About />
+          </ProtectedRoute>
+        } />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/categories/:category" element={<Categories />} />
-        <Route path="/categories/local-products" element={<LocalProducts />} />
+        <Route path="/products" element={
+          <ProtectedRoute>
+            <Products />
+          </ProtectedRoute>
+        } />
+        <Route path="/product/:id" element={
+          <ProtectedRoute>
+            <ProductDetails />
+          </ProtectedRoute>
+        } />
+        <Route path="/cart" element={
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/categories" element={
+          <ProtectedRoute>
+            <Categories />
+          </ProtectedRoute>
+        } />
+        <Route path="/categories/:category" element={
+          <ProtectedRoute>
+            <Categories />
+          </ProtectedRoute>
+        } />
+        <Route path="/categories/local-products" element={
+          <ProtectedRoute>
+            <LocalProducts />
+          </ProtectedRoute>
+        } />
+        
+        {/* Admin Routes - Development mode (no login required) */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/manage-orders" element={<ManageOrder />} />
         <Route path="/manage-products" element={<ManageProduct />} />

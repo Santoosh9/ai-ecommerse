@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './layouts/Navbar';
 import Footer from './layouts/Footer';
 import AppRoutes from './routes';
+import Chatbot from './chatbot/Chatbot';
 
 // Loading component
 const LoadingSpinner = () => (
@@ -27,6 +28,7 @@ function App() {
             </Suspense>
           </main>
           <Footer />
+          <Chatbot />
         </div>
       </AuthProvider>
     </DarkModeProvider>

@@ -79,7 +79,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-end">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -87,8 +87,8 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto mr-0">
-        <div className="bg-white dark:bg-gray-800 rounded-l-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transform transition-all duration-300 scale-100">
+      <div className="relative w-full max-w-md h-full overflow-y-auto">
+        <div className="bg-white dark:bg-gray-800 h-full shadow-2xl border-l border-gray-200/50 dark:border-gray-700/50 overflow-hidden transform transition-all duration-300">
           {/* Header */}
           <div className="relative p-6 border-b border-gray-200 dark:border-gray-700">
             <button

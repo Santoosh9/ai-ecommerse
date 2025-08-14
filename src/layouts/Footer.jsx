@@ -30,27 +30,27 @@ const Footer = () => {
   const footerLinks = {
     company: [
       { name: 'About Us', href: '/about' },
-      { name: 'Our Story', href: '/about' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Press', href: '/press' }
+      { name: 'Our Mission', href: '/about' },
+      { name: 'Team', href: '/about' },
+      { name: 'Careers', href: '/careers' }
     ],
     support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Returns', href: '/returns' },
-      { name: 'Size Guide', href: '/size-guide' }
+      { name: 'Customer Service', href: '/contact' },
+      { name: 'Shipping Info', href: '/shipping' },
+      { name: 'Returns & Exchanges', href: '/returns' },
+      { name: 'Size Chart', href: '/size-chart' }
     ],
     legal: [
       { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'GDPR', href: '/gdpr' }
+      { name: 'Terms & Conditions', href: '/terms' },
+      { name: 'Shipping Policy', href: '/shipping-policy' },
+      { name: 'Return Policy', href: '/return-policy' }
     ],
     categories: [
       { name: 'Electronics', href: '/categories/electronics' },
-      { name: 'Fashion', href: '/categories/fashion' },
-      { name: 'Home & Garden', href: '/categories/home' },
-      { name: 'Sports', href: '/categories/sports' }
+      { name: 'Fashion & Apparel', href: '/categories/fashion' },
+      { name: 'Home & Living', href: '/categories/home' },
+      { name: 'Local Products', href: '/categories/local-products' }
     ]
   };
 
@@ -146,9 +146,7 @@ const Footer = () => {
                   />
                 </Link>
                                  <p className="text-gray-300 mb-6 max-w-md leading-relaxed">
-                   🚀 <span className="text-blue-400 font-semibold">Revolutionizing</span> online shopping with cutting-edge technology and curated collections. 
-                   ✨ Experience the future of e-commerce with lightning-fast delivery, AI-powered recommendations, and 24/7 customer support. 
-                   🎯 Your satisfaction is our mission!
+                   Your trusted online marketplace for quality products. We offer a wide selection of electronics, fashion, home goods, and authentic local products with fast shipping and excellent customer service.
                  </p>
                 
                 {/* Contact Info */}
@@ -237,10 +235,9 @@ const Footer = () => {
             {/* Bottom Section */}
             <div className="border-t border-white/10 mt-12 pt-8">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <div className="flex items-center space-x-2 text-gray-300">
-                  <span>© {currentYear} Santosh Gajurel. All rights reserved.</span>
-                 
-                </div>
+                                 <div className="flex items-center space-x-2 text-gray-300">
+                   <span>© {currentYear} E-Shop. All rights reserved.</span>
+                 </div>
                 
                 <div className="flex items-center spacwithe-x-6">
               <div className="flex items-center space-x-2">

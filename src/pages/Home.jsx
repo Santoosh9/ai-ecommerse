@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   ShoppingBagIcon,
   StarIcon,
@@ -17,32 +17,34 @@ import LazyImage from '../components/LazyImage';
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+  const location = useLocation();
 
   // Memoize data to prevent unnecessary re-renders
   const heroSlides = useMemo(() => [
     {
-      title: "New Collection 2024",
-      subtitle: "Discover the latest trends in fashion and technology",
-      description: "Get up to 50% off on selected items. Limited time offer!",
+      title: "Welcome to E-Shop",
+      subtitle: "Your one-stop destination for quality products",
+      description: "Discover amazing deals on electronics, fashion, home goods, and authentic local products",
       image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      buttonText: "Shop Now",
+      buttonText: "Start Shopping",
       buttonLink: "/products"
     },
     {
-      title: "Electronics Sale",
-      subtitle: "Premium gadgets at unbeatable prices",
-      description: "Smartphones, laptops, and accessories with amazing discounts",
+      title: "Electronics Collection",
+      subtitle: "Latest gadgets and tech essentials",
+      description: "Smartphones, laptops, headphones, and more with competitive prices",
       image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      buttonText: "Explore Electronics",
+      buttonText: "Shop Electronics",
       buttonLink: "/categories/electronics"
     },
     {
-      title: "Home & Lifestyle",
-      subtitle: "Transform your living space",
-      description: "Furniture, decor, and lifestyle products for your perfect home",
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      buttonText: "Shop Home",
-      buttonLink: "/categories/home"
+      title: "Local Artisan Products",
+      subtitle: "Handcrafted treasures from local artisans",
+      description: "Support local communities with authentic handmade products",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      buttonText: "Explore Local",
+      buttonLink: "/categories/local-products"
     }
   ], []);
 
@@ -50,25 +52,25 @@ const Home = () => {
     {
       name: "Electronics",
       image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      count: "1,234 Products",
+      count: "850+ Products",
       color: "from-blue-500 to-purple-600"
     },
     {
-      name: "Fashion",
+      name: "Fashion & Apparel",
       image: "https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80",
-      count: "2,567 Products",
+      count: "1,200+ Products",
       color: "from-pink-500 to-red-500"
     },
     {
-      name: "Home & Garden",
+      name: "Home & Living",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      count: "890 Products",
+      count: "650+ Products",
       color: "from-green-500 to-teal-600"
     },
     {
-      name: "Sports",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-      count: "456 Products",
+      name: "Local Products",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      count: "200+ Products",
       color: "from-orange-500 to-yellow-500"
     }
   ], []);
@@ -76,13 +78,20 @@ const Home = () => {
   useEffect(() => {
     setIsVisible(true);
     
+    // Check if user was redirected from a protected route
+    if (location.state?.message) {
+      setShowLoginMessage(true);
+      // Auto-hide message after 5 seconds
+      setTimeout(() => setShowLoginMessage(false), 5000);
+    }
+    
     // Auto-slide for hero section
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [heroSlides.length]);
+  }, [heroSlides.length, location.state]);
 
 
 
@@ -178,6 +187,22 @@ const Home = () => {
 
   return (
     <div className={`min-h-screen transition-all duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Login Message Banner */}
+      {showLoginMessage && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
+          <div className="flex items-center space-x-2">
+            <span className="text-xl">🔒</span>
+            <span className="font-semibold">{location.state?.message}</span>
+            <button 
+              onClick={() => setShowLoginMessage(false)}
+              className="ml-4 text-white hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Hero Section */}
       <section className="relative h-screen overflow-hidden">
         {/* Background Slides */}
