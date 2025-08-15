@@ -1,14 +1,14 @@
 // API Configuration
 const API_CONFIG = {
   // Base URL for API calls
-  BASE_URL: 'https://localhost:7001/api', // Default .NET port
+  BASE_URL: 'https://ecommerce-shoes-c7b9b8d4e5fygeeg.uksouth-01.azurewebsites.net',
   
   // API Endpoints
   ENDPOINTS: {
-    // Authentication
+    // Authentication - Try different patterns
     AUTH: {
-      LOGIN: '/auth/login',
-      REGISTER: '/auth/register',
+      LOGIN: '/api/Account/Login',
+      REGISTER: '/api/Account/UserRegister',
       LOGOUT: '/auth/logout',
       REFRESH_TOKEN: '/auth/refresh-token',
       FORGOT_PASSWORD: '/auth/forgot-password',
@@ -95,7 +95,7 @@ const API_CONFIG = {
   },
   
   // Request Timeout (in milliseconds)
-  TIMEOUT: 10000,
+  TIMEOUT: 30000, // Increased to 30 seconds
   
   // Retry Configuration
   RETRY: {
@@ -125,7 +125,7 @@ const getApiConfig = () => {
     default:
       return {
         ...API_CONFIG,
-        BASE_URL: apiUrl || 'https://localhost:7001/api'
+        BASE_URL: apiUrl || 'https://ecommerce-shoes-c7b9b8d4e5fygeeg.uksouth-01.azurewebsites.net'
       };
   }
 };

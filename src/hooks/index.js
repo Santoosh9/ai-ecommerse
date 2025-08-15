@@ -3,3 +3,7 @@ export { useDebounce } from './useDebounce';
 export { useLocalStorage } from './useLocalStorage';
 export { useScrollPosition } from './useScrollPosition';
 export { usePerformance } from './usePerformance';
+export { useAuth } from './useAuth';
+export { useCart } from './useCart';
+export { useProducts } from './useProducts';
+export { useOrders } from './useOrders';

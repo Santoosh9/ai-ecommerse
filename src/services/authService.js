@@ -6,18 +6,52 @@ class AuthService {
   // Login user
   async login(credentials) {
     try {
+      console.log('🚀 Attempting login with credentials:', { email: credentials.email });
+      console.log('🎯 Endpoint:', getEndpoint('AUTH.LOGIN'));
+      
       const response = await apiPost(getEndpoint('AUTH.LOGIN'), credentials);
       
-      // Store tokens in localStorage
-      if (response.accessToken) {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.user));
+      console.log('✅ Login response:', response);
+      
+      // Handle different response formats
+      let authData = response;
+      
+      // If response has a data property (common in API responses)
+      if (response.data) {
+        authData = response.data;
       }
       
-      return response;
+      // If response has a result property
+      if (response.result) {
+        authData = response.result;
+      }
+      
+      // Store tokens in localStorage
+      if (authData.accessToken || authData.token) {
+        const token = authData.accessToken || authData.token;
+        const refreshToken = authData.refreshToken || authData.refreshToken;
+        const user = authData.user || authData;
+        
+        localStorage.setItem('accessToken', token);
+        if (refreshToken) {
+          localStorage.setItem('refreshToken', refreshToken);
+        }
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
+      return authData;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('❌ Login failed:', error);
+      
+      // Provide more specific error messages
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('Login timed out. Please check your internet connection and try again.');
+      } else if (error.message.includes('timeout')) {
+        throw new Error('Server is taking too long to respond. Please try again later.');
+      } else if (!error.response) {
+        throw new Error('Cannot connect to server. Please check your internet connection.');
+      }
+      
       throw error;
     }
   }
@@ -25,18 +59,52 @@ class AuthService {
   // Register new user
   async register(userData) {
     try {
+      console.log('🚀 Attempting registration with data:', userData);
+      console.log('🎯 Endpoint:', getEndpoint('AUTH.REGISTER'));
+      
       const response = await apiPost(getEndpoint('AUTH.REGISTER'), userData);
       
-      // If registration includes auto-login, store tokens
-      if (response.accessToken) {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.user));
+      console.log('✅ Registration response:', response);
+      
+      // Handle different response formats
+      let authData = response;
+      
+      // If response has a data property (common in API responses)
+      if (response.data) {
+        authData = response.data;
       }
       
-      return response;
+      // If response has a result property
+      if (response.result) {
+        authData = response.result;
+      }
+      
+      // If registration includes auto-login, store tokens
+      if (authData.accessToken || authData.token) {
+        const token = authData.accessToken || authData.token;
+        const refreshToken = authData.refreshToken || authData.refreshToken;
+        const user = authData.user || authData;
+        
+        localStorage.setItem('accessToken', token);
+        if (refreshToken) {
+          localStorage.setItem('refreshToken', refreshToken);
+        }
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
+      return authData;
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('❌ Registration failed:', error);
+      
+      // Provide more specific error messages
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('Registration timed out. Please check your internet connection and try again.');
+      } else if (error.message.includes('timeout')) {
+        throw new Error('Server is taking too long to respond. Please try again later.');
+      } else if (!error.response) {
+        throw new Error('Cannot connect to server. Please check your internet connection.');
+      }
+      
       throw error;
     }
   }
@@ -248,12 +316,31 @@ class AuthService {
 
   // Format API errors for display
   formatError(error) {
+    console.log('Error details:', error);
+    
+    // Handle different error response formats
     if (error.response?.data?.errors) {
       // Validation errors
       return Object.values(error.response.data.errors).flat();
     } else if (error.response?.data?.message) {
       // Single error message
       return [error.response.data.message];
+    } else if (error.response?.data?.error) {
+      // Error property
+      return [error.response.data.error];
+    } else if (error.response?.data?.title) {
+      // Title property (common in .NET)
+      return [error.response.data.title];
+    } else if (error.response?.data) {
+      // Try to extract message from response data
+      const data = error.response.data;
+      if (typeof data === 'string') {
+        return [data];
+      } else if (data.message) {
+        return [data.message];
+      } else if (data.error) {
+        return [data.error];
+      }
     } else if (error.message) {
       // Network or other errors
       return [error.message];

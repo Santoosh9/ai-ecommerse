@@ -2,8 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
 import AuthModal from '../components/AuthModal';
 import { authService } from '../services';
+import mockAuthService from '../services/mockAuthService'; // Added for temporary use
+
+// Toggle this to switch between mock and real API
+const USE_MOCK_SERVICE = false; // Set to false to use real API
 
 const AuthContext = createContext();
+
+export { AuthContext };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -15,7 +21,10 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage('user', null);
-  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+  // Use mock service temporarily until backend is ready
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    USE_MOCK_SERVICE ? mockAuthService.isAuthenticated() : authService.isAuthenticated()
+  );
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [loading, setLoading] = useState(false);
@@ -24,11 +33,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is authenticated on mount
     const checkAuth = () => {
-      const isAuth = authService.isAuthenticated();
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      const isAuth = service.isAuthenticated();
       setIsAuthenticated(isAuth);
       
       if (isAuth && !user) {
-        const currentUser = authService.getCurrentUser();
+        const currentUser = service.getCurrentUser();
         setUser(currentUser);
       }
     };
@@ -41,12 +51,14 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
-      const response = await authService.login(credentials);
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      const response = await service.login(credentials);
       setUser(response.user);
       setIsAuthenticated(true);
       return response;
     } catch (error) {
-      const errorMessages = authService.formatError(error);
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      const errorMessages = service.formatError(error);
       setError(errorMessages);
       throw error;
     } finally {
@@ -67,17 +79,15 @@ export const AuthProvider = ({ children }) => {
         address: userData.address
       };
       
-      const response = await authService.register(registrationData);
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      const response = await service.register(registrationData);
       
-      // If registration includes auto-login
-      if (response.user) {
-        setUser(response.user);
-        setIsAuthenticated(true);
-      }
-      
+      // Don't auto-login after registration - just return success
+      // User needs to login separately
       return response;
     } catch (error) {
-      const errorMessages = authService.formatError(error);
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      const errorMessages = service.formatError(error);
       setError(errorMessages);
       throw error;
     } finally {
@@ -89,7 +99,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     
     try {
-      await authService.logout();
+      const service = USE_MOCK_SERVICE ? mockAuthService : authService;
+      await service.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

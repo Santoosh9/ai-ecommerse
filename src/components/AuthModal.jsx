@@ -13,6 +13,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const { login, register, loading, error: authError, clearError } = useAuth();
 
@@ -37,19 +38,30 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
         }
         
         // Call register API
-        await register(formData);
+        const response = await register(formData);
+        console.log('Registration successful:', response);
+        
+        // After successful registration, switch to login mode
+        setMode('login');
+        setFormData({ username: '', email: '', password: '', address: '' });
+        setError(''); // Clear any errors
+        setSuccessMessage('Registration successful! Please login with your credentials.');
+        return; // Don't close modal, just switch to login
       } else {
         // Call login API
-        await login({
+        const response = await login({
           email: formData.email,
           password: formData.password
         });
+        console.log('Login successful:', response);
+        
+        // Only close modal after successful login
+        onClose();
+        setFormData({ username: '', email: '', password: '', address: '' });
       }
-
-      onClose();
-      setFormData({ username: '', email: '', password: '', address: '' });
     } catch (err) {
-      setError(err.message);
+      console.error('Auth error:', err);
+      setError(err.message || 'An error occurred during authentication');
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +70,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const switchMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
+    setSuccessMessage('');
     setFormData({ username: '', email: '', password: '', address: '' });
   };
 
@@ -92,6 +105,14 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {successMessage && (
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <p className="text-green-600 dark:text-green-400 text-sm">
+                  {successMessage}
+                </p>
+              </div>
+            )}
+            
             {(error || authError) && (
               <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <p className="text-red-600 dark:text-red-400 text-sm">
