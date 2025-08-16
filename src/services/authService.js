@@ -6,7 +6,7 @@ class AuthService {
   // Login user
   async login(credentials) {
     try {
-      console.log('🚀 Attempting login with credentials:', { email: credentials.email });
+      console.log('🚀 Attempting login with credentials:', { username: credentials.username });
       console.log('🎯 Endpoint:', getEndpoint('AUTH.LOGIN'));
       
       const response = await apiPost(getEndpoint('AUTH.LOGIN'), credentials);
@@ -61,6 +61,7 @@ class AuthService {
     try {
       console.log('🚀 Attempting registration with data:', userData);
       console.log('🎯 Endpoint:', getEndpoint('AUTH.REGISTER'));
+      console.log('📤 Raw userData being sent:', JSON.stringify(userData, null, 2));
       
       const response = await apiPost(getEndpoint('AUTH.REGISTER'), userData);
       

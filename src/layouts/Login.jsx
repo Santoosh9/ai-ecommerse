@@ -5,7 +5,7 @@ import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    userName: '',
     password: ''
   });
 
@@ -53,25 +53,25 @@ const Login = () => {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Email Field */}
+            {/* userName Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-                Email Address
+              <label htmlFor="userName" className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
+                userName Address
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <EnvelopeIcon className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="userName"
+                  name="userName"
+                  type="userName"
+                  autoComplete="userName"
                   required
-                  value={formData.email}
+                  value={formData.userName}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-900 dark:text-white transition-all duration-300 hover:border-gray-400 dark:hover:border-gray-500"
-                  placeholder="Enter your email"
+                  placeholder="Enter your userName"
                 />
               </div>
             </div>

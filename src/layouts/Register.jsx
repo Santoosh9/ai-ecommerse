@@ -1,28 +1,63 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    fullName: '',
+    userName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    address: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log('Registration submitted', formData);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      console.log('📤 Sending registration data:', formData);
+      
+      const response = await fetch('https://ecommerce-shoes-c7b9b8d4e5fygeeg.uksouth-01.azurewebsites.net/api/Account/UserRegister', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('📡 Registration response status:', response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Registration successful:', data);
+        alert('Registration successful! Please login with your credentials.');
+        navigate('/login');
+      } else {
+        const errorData = await response.text();
+        console.error('❌ Registration failed:', errorData);
+        setError(`Registration failed: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      setError('Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
-    setFormData({
+    const newFormData = {
       ...formData,
       [e.target.name]: e.target.value
-    });
+    };
+    console.log('🔄 Form data updated:', newFormData);
+    setFormData(newFormData);
   };
 
   return (
@@ -56,22 +91,29 @@ const Register = () => {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                <p className="text-red-600 dark:text-red-400 text-center font-medium">
+                  {error}
+                </p>
+              </div>
+            )}
             {/* Full Name Field */}
             <div className="space-y-2">
               <label htmlFor="fullName" className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-                Full Name
+                User Name
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <UserIcon className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
-                  id="fullName"
-                  name="fullName"
+                  id="userName"
+                  name="userName"
                   type="text"
-                  autoComplete="name"
+                  autoComplete="userName"
                   required
-                  value={formData.fullName}
+                  value={formData.userName}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-900 dark:text-white transition-all duration-300 hover:border-gray-400 dark:hover:border-gray-500"
                   placeholder="Enter your full name"
@@ -136,27 +178,26 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Confirm Password Field */}
+            {/* Address Field */}
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-                Confirm Password
+              <label htmlFor="address" className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
+                Address
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <LockClosedIcon className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  autoComplete="new-password"
+                  id="address"
+                  name="address"
+                  type="text"
                   required
-                  value={formData.confirmPassword}
+                  value={formData.address}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-900 dark:text-white transition-all duration-300 hover:border-gray-400 dark:hover:border-gray-500"
-                  placeholder="Confirm your password"
+                  placeholder="Enter your address"
                 />
-                <button
+                {/* <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
@@ -166,7 +207,7 @@ const Register = () => {
                   ) : (
                     <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
                   )}
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -204,9 +245,17 @@ const Register = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Create Account
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Creating Account...
+                </div>
+              ) : (
+                'Create Account'
+              )}
             </button>
 
             {/* Divider */}

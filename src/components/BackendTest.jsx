@@ -44,7 +44,7 @@ const BackendTest = () => {
     
     try {
       const testData = {
-        username: 'testuser',
+        userName: 'testuser',
         email: 'test@example.com',
         password: 'TestPassword123!',
         address: 'Test Address'
@@ -80,6 +80,46 @@ const BackendTest = () => {
     }
   };
 
+  const testLoginEndpoint = async () => {
+    setLoading(true);
+    setResult('Testing login endpoint...');
+    
+    try {
+      const testData = {
+        userName: 'testuser',
+        password: 'TestPassword123!'
+      };
+      
+      console.log('🔍 Testing login endpoint:', apiConfig.BASE_URL + '/api/Account/Login');
+      console.log('📤 Sending data:', testData);
+      
+      const response = await fetch(apiConfig.BASE_URL + '/api/Account/Login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testData),
+        mode: 'cors',
+      });
+      
+      console.log('📡 Login response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setResult('✅ Login endpoint working! Response: ' + JSON.stringify(data));
+      } else {
+        const errorData = await response.text();
+        setResult('⚠️ Login endpoint responded with status ' + response.status + ': ' + errorData);
+      }
+      
+    } catch (error) {
+      console.error('❌ Login test failed:', error);
+      setResult('❌ Login endpoint error: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md mx-auto mt-8">
       <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -109,6 +149,14 @@ const BackendTest = () => {
           className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
         >
           {loading ? 'Testing...' : 'Test Registration Endpoint'}
+        </button>
+        
+        <button
+          onClick={testLoginEndpoint}
+          disabled={loading}
+          className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50"
+        >
+          {loading ? 'Testing...' : 'Test Login Endpoint'}
         </button>
       </div>
       
