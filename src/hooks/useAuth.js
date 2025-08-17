@@ -36,10 +36,4 @@ export const useAuthError = () => {
   return error;
 };
 
-// Hook for opening auth modal
-export const useAuthModal = () => {
-  const { openAuthModal, closeAuthModal, showAuthModal } = useAuth();
-  return { openAuthModal, closeAuthModal, showAuthModal };
-};
-
 export default useAuth;

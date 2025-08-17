@@ -1,23 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
-import AuthModal from '../components/AuthModal';
 import { authService } from '../services';
 import mockAuthService from '../services/mockAuthService'; // Added for temporary use
 
 // Toggle this to switch between mock and real API
-const USE_MOCK_SERVICE = false; // Set to false to use real API
+const USE_MOCK_SERVICE = true; // Set to true to use mock API (backend has issues)
 
 const AuthContext = createContext();
 
 export { AuthContext };
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage('user', null);
@@ -25,8 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     USE_MOCK_SERVICE ? mockAuthService.isAuthenticated() : authService.isAuthenticated()
   );
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -51,8 +40,15 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
+      // Transform credentials to match service expectations
+      const loginData = {
+        username: credentials.username || credentials.userName, // Handle both userName and username
+        email: credentials.email,
+        password: credentials.password
+      };
+      
       const service = USE_MOCK_SERVICE ? mockAuthService : authService;
-      const response = await service.login(credentials);
+      const response = await service.login(loginData);
       setUser(response.user);
       setIsAuthenticated(true);
       return response;
@@ -71,9 +67,10 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     
     try {
+      console.log('📤 Sending registration data:', userData);
       // Transform the form data to match API expectations
       const registrationData = {
-        username: userData.username,
+        username: userData.userName,
         email: userData.email,
         password: userData.password,
         address: userData.address
@@ -97,51 +94,41 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     setLoading(true);
+    setError(null);
     
     try {
       const service = USE_MOCK_SERVICE ? mockAuthService : authService;
       await service.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
       setUser(null);
       setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails, clear local state
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
       setLoading(false);
     }
   };
 
-  const openAuthModal = (mode = 'login') => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-  };
-
-  const closeAuthModal = () => {
-    setShowAuthModal(false);
+  const clearError = () => {
+    setError(null);
   };
 
   const value = {
     user,
     isAuthenticated,
+    loading,
+    error,
     login,
     register,
     logout,
-    loading,
-    error,
-    showAuthModal,
-    authMode,
-    openAuthModal,
-    closeAuthModal,
-    clearError: () => setError(null)
+    clearError
   };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={closeAuthModal} 
-        initialMode={authMode}
-      />
     </AuthContext.Provider>
   );
 };

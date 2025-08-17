@@ -12,8 +12,7 @@ import {
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { useDarkMode } from "../contexts/DarkModeContext";
-import { useAuth } from "../contexts/AuthContext";
-import { useScrollPosition, useDebounce } from "../hooks";
+import { useAuth, useScrollPosition, useDebounce } from "../hooks";
 
 const categories = [
   { name: "Electronics", href: "/categories/electronics" },
@@ -22,11 +21,26 @@ const categories = [
   { name: "Local Products", href: "/categories/local-products" },
 ];
 
+// Helper for nav links with gradient underline
+function NavLink({ to, label, location, navLinkClass }) {
+  const active = location.pathname === to;
+  return (
+    <Link to={to} className={navLinkClass(active)}>
+      <span className="relative z-10">{label}</span>
+      <span
+        className={`absolute left-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 to-pink-500 transition-all duration-300
+        ${active ? 'w-full' : 'w-0 group-hover:w-full'}
+        `}
+      ></span>
+    </Link>
+  );
+}
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { dark, toggleDarkMode } = useDarkMode();
-  const { user, isAuthenticated, logout, openAuthModal } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [cartCount, setCartCount] = useState(3); // Example cart count
   const location = useLocation();
   
@@ -49,21 +63,7 @@ const Navbar = () => {
     group
     `;
 
-  // Protected NavLink component with lock icon
-  const ProtectedNavLink = ({ to, label, location, navLinkClass, isProtected = true }) => {
-    const isActive = location.pathname === to;
-    return (
-      <Link to={to} className={navLinkClass(isActive)}>
-        <div className="flex items-center space-x-1">
-          <span>{label}</span>
-          {isProtected && !isAuthenticated && (
-            <LockClosedIcon className="w-3 h-3 text-gray-400" />
-          )}
-        </div>
-        <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-pink-500 transition-all duration-300 group-hover:w-full"></span>
-      </Link>
-    );
-  };
+
 
   return (
     <nav
@@ -88,8 +88,8 @@ const Navbar = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
             <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-            <ProtectedNavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
-            <ProtectedNavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
+            <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+            <NavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
             <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
             {/* Categories Dropdown */}
             <Menu as="div" className="relative">
@@ -148,16 +148,16 @@ const Navbar = () => {
             </button>
 
             {/* User Profile/Auth */}
-            {isAuthenticated ? (
+            {isAuthenticated && user ? (
               <div className="ml-2 relative group">
                 <button className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300">
                   <img
-                    src={user.avatar}
-                    alt={user.name}
+                    src={user.avatar || '/images/default-avatar.png'}
+                    alt={user.name || 'User'}
                     className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
                   />
                   <span className="hidden lg:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {user.name}
+                    {user.name || 'User'}
                   </span>
                 </button>
                 
@@ -193,12 +193,15 @@ const Navbar = () => {
                 </div>
           </div>
             ) : (
-              <button
-                onClick={() => openAuthModal('login')}
-                className="ml-2 p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 group"
-              >
-                <UserCircleIcon className="w-7 h-7 text-gray-500 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all duration-300" />
-              </button>
+              <div className="flex items-center">
+                <Link
+                  to="/login"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                >
+                  <UserCircleIcon className="w-5 h-5" />
+                  <span>Login</span>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -223,8 +226,8 @@ const Navbar = () => {
       >
         <div className="px-4 py-6 flex flex-col space-y-3">
           <NavLink to="/" label="Home" location={location} navLinkClass={navLinkClass} />
-          <ProtectedNavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
-          <ProtectedNavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
+          <NavLink to="/products" label="Shop" location={location} navLinkClass={navLinkClass} />
+          <NavLink to="/about" label="About" location={location} navLinkClass={navLinkClass} />
           <NavLink to="/contact" label="Contact" location={location} navLinkClass={navLinkClass} />
           {/* Categories Dropdown */}
           <Menu as="div" className="relative">
@@ -265,9 +268,6 @@ const Navbar = () => {
           <Link to="/cart" className="relative group">
             <div className="flex items-center space-x-1">
               <ShoppingCartIcon className="w-7 h-7 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-              {!isAuthenticated && (
-                <LockClosedIcon className="w-3 h-3 text-gray-400" />
-              )}
             </div>
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-bounce">
@@ -286,16 +286,16 @@ const Navbar = () => {
           </button>
 
           {/* User Profile/Auth Mobile */}
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <div className="flex items-center space-x-3">
               <img
-                src={user.avatar}
-                alt={user.name}
+                src={user.avatar || '/images/default-avatar.png'}
+                alt={user.name || 'User'}
                 className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700"
               />
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name || 'User'}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{user.email || 'user@example.com'}</p>
               </div>
               <button
                 onClick={logout}
@@ -305,16 +305,16 @@ const Navbar = () => {
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => {
-                openAuthModal('login');
-                setIsOpen(false);
-              }}
-              className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-            >
-              <UserCircleIcon className="w-6 h-6 text-gray-500 dark:text-gray-300" />
-              <span className="text-gray-700 dark:text-gray-300">Sign In</span>
-            </button>
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+              >
+                <UserCircleIcon className="w-6 h-6 text-gray-500 dark:text-gray-300" />
+                <span className="text-gray-700 dark:text-gray-300">Sign In</span>
+              </Link>
+            </div>
           )}
         </div>
       </div>
@@ -322,20 +322,5 @@ const Navbar = () => {
     </nav>
   );
 };
-
-// Helper for nav links with gradient underline
-function NavLink({ to, label, location, navLinkClass }) {
-  const active = location.pathname === to;
-  return (
-    <Link to={to} className={navLinkClass(active)}>
-      <span className="relative z-10">{label}</span>
-      <span
-        className={`absolute left-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 to-pink-500 transition-all duration-300
-        ${active ? 'w-full' : 'w-0 group-hover:w-full'}
-        `}
-      ></span>
-    </Link>
-  );
-}
 
 export default Navbar;

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const AccessDeniedAlert = ({ isVisible, onClose, message = "You need to login to access this page." }) => {
   const [isAnimating, setIsAnimating] = useState(false);
-  const { openAuthModal } = useAuth();
 
   useEffect(() => {
     if (isVisible) {
@@ -75,15 +74,13 @@ const AccessDeniedAlert = ({ isVisible, onClose, message = "You need to login to
           >
             Cancel
           </button>
-                     <button
-             onClick={() => {
-               onClose();
-               openAuthModal('login');
-             }}
+                     <Link
+             to="/login"
+             onClick={onClose}
              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
            >
              Login Now
-           </button>
+           </Link>
         </div>
       </div>
     </div>

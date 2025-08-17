@@ -20,16 +20,22 @@ class MockAuthService {
   async login(credentials) {
     await this.delay(800);
     
-    const { email, password } = credentials;
+    const { username, email, password } = credentials;
     
-    // Simple validation
-    if (!email || !password) {
-      throw new Error('Email and password are required');
+    // Simple validation - accept either username or email
+    if ((!username && !email) || !password) {
+      throw new Error('Username/Email and password are required');
     }
     
-    // Check if user exists (demo user)
-    if (email === 'demo@example.com' && password === 'demo123') {
-      const user = this.users.find(u => u.email === email);
+    // Check if user exists - try both username and email
+    const user = this.users.find(u => 
+      (username && u.username === username) || 
+      (email && u.email === email)
+    );
+    
+    if (user) {
+      // For demo purposes, accept any password for registered users
+      // In real app, you'd verify the password hash
       const mockToken = 'mock-jwt-token-' + Date.now();
       
       // Store in localStorage
@@ -42,7 +48,7 @@ class MockAuthService {
         message: 'Login successful (Mock)'
       };
     } else {
-      throw new Error('Invalid email or password');
+      throw new Error('Invalid username/email or password');
     }
   }
 

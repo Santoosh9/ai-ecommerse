@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../hooks';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register, loading, error, clearError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
@@ -17,37 +17,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    clearError();
 
     try {
-      console.log('📤 Sending registration data:', formData);
-      
-      const response = await fetch('https://ecommerce-shoes-c7b9b8d4e5fygeeg.uksouth-01.azurewebsites.net/api/Account/UserRegister', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      console.log('📡 Registration response status:', response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Registration successful:', data);
-        alert('Registration successful! Please login with your credentials.');
-        navigate('/login');
-      } else {
-        const errorData = await response.text();
-        console.error('❌ Registration failed:', errorData);
-        setError(`Registration failed: ${errorData}`);
-      }
+      const response = await register(formData);
+      alert('Registration successful! Please login with your credentials.');
+      navigate('/login');
     } catch (error) {
-      console.error('❌ Registration error:', error);
-      setError('Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Registration error:', error);
     }
   };
 
@@ -56,7 +33,6 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value
     };
-    console.log('🔄 Form data updated:', newFormData);
     setFormData(newFormData);
   };
 
@@ -245,10 +221,10 @@ const Register = () => {
             {/* Register Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {isLoading ? (
+              {loading ? (
                 <div className="flex items-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   Creating Account...

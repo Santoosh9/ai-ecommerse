@@ -1,6 +1,5 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ProtectedRoute from '../components/ProtectedRoute';
 
 // Lazy load all page components
 const Home = lazy(() => import('../pages/Home'));
@@ -13,6 +12,8 @@ const Contact = lazy(() => import('../pages/Contact'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Categories = lazy(() => import('../pages/Categories'));
 const LocalProducts = lazy(() => import('../pages/LocalProducts'));
+const Login = lazy(() => import('../layouts/Login'));
+const Register = lazy(() => import('../layouts/Register'));
 const AdminDashboard = lazy(() => import('../admin/AdminDashboard'));
 const ManageOrder = lazy(() => import('../admin/ManageOrder'));
 const ManageProduct = lazy(() => import('../admin/ManageProduct'));
@@ -29,53 +30,21 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteLoading />}>
       <Routes>
-        {/* Public Routes - No login required */}
+        {/* All Routes - No login required */}
         <Route path="/" element={<Home />} />
-        
-        {/* Protected Routes - Login required */}
-        <Route path="/about" element={
-          <ProtectedRoute>
-            <About />
-          </ProtectedRoute>
-        } />
+        <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/products" element={
-          <ProtectedRoute>
-            <Products />
-          </ProtectedRoute>
-        } />
-        <Route path="/product/:id" element={
-          <ProtectedRoute>
-            <ProductDetails />
-          </ProtectedRoute>
-        } />
-        <Route path="/cart" element={
-          <ProtectedRoute>
-            <Cart />
-          </ProtectedRoute>
-        } />
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        } />
-        <Route path="/categories" element={
-          <ProtectedRoute>
-            <Categories />
-          </ProtectedRoute>
-        } />
-        <Route path="/categories/:category" element={
-          <ProtectedRoute>
-            <Categories />
-          </ProtectedRoute>
-        } />
-        <Route path="/categories/local-products" element={
-          <ProtectedRoute>
-            <LocalProducts />
-          </ProtectedRoute>
-        } />
+        <Route path="/products" element={<Products />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/categories/:category" element={<Categories />} />
+        <Route path="/categories/local-products" element={<LocalProducts />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         
-        {/* Admin Routes - Development mode (no login required) */}
+        {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/manage-orders" element={<ManageOrder />} />
         <Route path="/manage-products" element={<ManageProduct />} />

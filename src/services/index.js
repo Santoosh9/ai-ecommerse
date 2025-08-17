@@ -22,7 +22,7 @@ export { default as orderService } from './orderService';
 export { default as paymentService } from './paymentService';
 export { default as adminService } from './adminService';
 
-// Re-export commonly used auth functions
+// Re-export commonly used auth functions from the authService instance
 export const {
   login,
   register,
