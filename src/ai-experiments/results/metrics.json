@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Popularity",
+    "precision": 0.05092165898617536,
+    "recall": 0.05738474413445512,
+    "ndcg": 0.05196742103895139,
+    "coverage": 0.002728512960436562,
+    "latency": 7
+  },
+  {
+    "name": "Content-Based",
+    "precision": 0,
+    "recall": 0,
+    "ndcg": 0,
+    "coverage": 0.005457025920873124,
+    "latency": 7
+  },
+  {
+    "name": "KNN CF",
+    "precision": 0.05092165898617536,
+    "recall": 0.05738474413445512,
+    "ndcg": 0.05196742103895139,
+    "coverage": 0.002728512960436562,
+    "latency": 6
+  }
+]
